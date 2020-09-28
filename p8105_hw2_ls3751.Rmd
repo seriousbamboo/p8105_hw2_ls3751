@@ -1,0 +1,10 @@
+---
+title: "p8105_hw2_ls3751"
+author: "Liucheng Shi"
+output: github_document
+---
+
+```{r setup}
+library(tidyverse)
+```
+
