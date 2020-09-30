@@ -137,7 +137,7 @@ nyc_transit_tidy = pivot_longer(nyc_distinct, route1:route11,
 
 ## Problem 3
 
-### 3.1 Data cleaning Step 1 (pol_month):
+### 3.1 Data cleaning (pols_month):
 
 *   _break up mon into year, month, and day_.
 *   _replace month number with month name, create a president variable_. 
@@ -159,7 +159,11 @@ polmonth_tidy = polmonth_df %>%
   select(-prez_dem, -prez_gop, -day, -month_name)
 ```
 
-### 3.2 Data cleaning Step 2 (snp):
+This dataset contains `r nrow(polmonth_tidy)` records about politicians' and presidents' status. 
+The dimension of pols_month is [`r dim(polmonth_tidy)`], with `r ncol(polmonth_tidy)` variables collected from `r min(pull(polmonth_tidy,year))` to `r max(pull(polmonth_tidy,year))`.
+The variables are `r names(polmonth_tidy)`.
+
+### 3.2 Data cleaning (snp):
 
 *   _use a similar process_.
 *   _make year and month leading columns_.
@@ -177,7 +181,11 @@ snp_tidy = snp_df %>%
   select(year, month, close)
 ```
 
-### 3.3 Data cleaning Step 3 (unemployment):
+This dataset contains `r nrow(snp_tidy)` S&P stock market index values, which the variable close indicates the value of S&P index when market is closed at that day. 
+The dimension of snp is [`r dim(snp_tidy)`], with `r ncol(snp_tidy)` variables collected from `r min(pull(snp_tidy,year))` to `r max(pull(snp_tidy,year))`.
+The variables are `r names(snp_tidy)`.
+
+### 3.3 Data cleaning (unemployment):
 
 ```{r, message = F}
 unemployment_df = read_csv("./data/unemployment.csv") %>% 
@@ -186,26 +194,29 @@ unemployment_df = read_csv("./data/unemployment.csv") %>%
     names_to = "month",
     values_to = "unemployment") %>% 
   mutate(year = as.integer(year))
-```
-
-```{r}
 month_Lower = tibble(
   month = c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"),
   month_name = month.name
-)
-```
-
-```{r}
+  )
 unemployment_tidy = unemployment_df %>% 
   left_join(month_Lower, by = "month") %>% 
   mutate(month = month_name) %>% 
   select(year, month, unemployment)
 ```
 
-_Join the three datasets accordingly_
+This dataset contains `r nrow(unemployment_tidy)` unemployment rates recorded monthly each year. 
+The dimension of unemployment is [`r dim(unemployment_tidy)`], with `r ncol(unemployment_tidy)` variables collected from `r min(pull(unemployment_tidy,year))` to `r max(pull(unemployment_tidy,year))`.
+The variables are `r names(unemployment_tidy)`.
+
+### 3.4 Join the three datasets accordingly
 
 ```{r}
 analy_df = 
   left_join(polmonth_tidy,snp_tidy, by = c("year","month")) %>% 
   left_join(unemployment_tidy, by = c("year","month"))
 ```
+
+
+Since we start merging with pols_month dataset, we get `r nrow(analy_df)` observations, equals to the rows of pols_month dataset. 
+The dimension of the final_df is [`r dim(analy_df)`],with `r ncol(analy_df)` variables collected from `r min(pull(analy_df,year))` to `r max(pull(analy_df,year))`. Since pols_month dataset starts from 1947 which is earlier than the other two datasets, we can observe many missing data in "close" and "unemployment" associate to the years 1947-1949.
+
