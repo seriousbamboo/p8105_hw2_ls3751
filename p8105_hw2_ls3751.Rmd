@@ -128,7 +128,75 @@ nyc_transit_tidy = pivot_longer(nyc_transit_df, route1:route11,
 
 ## Problem 3
 
-```{r}
+### 3.1 Data cleaning Step 1 (pol_month):
 
+*   _break up mon into year, month, and day_.
+*   _replace month number with month name, create a president variable_. 
+*   _remove prez_dem, prez_gop, and day_.
+
+```{r, message = F}
+polmonth_df = read_csv("./data/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, c("year", "month", "day")) %>% 
+  mutate(president = case_when(
+    prez_gop == 1 ~ "gop",
+    prez_dem == 1 ~ "dem"),
+         year = as.numeric(year),
+         day = as.numeric(day),
+         month = as.numeric(month))
+polmonth_tidy = polmonth_df %>% 
+  left_join(month_df, by = "month") %>% 
+  mutate(month = month_name) %>% 
+  select(-prez_dem, -prez_gop, -day, -month_name)
 ```
 
+### 3.2 Data cleaning Step 2 (snp):
+
+*   _use a similar process_.
+*   _make year and month leading columns_.
+
+```{r, message = F}
+snp_df = read_csv("./data/snp.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(date, c("month", "day", "year")) %>% 
+  mutate (month = as.numeric (month), 
+          day = as.numeric(day), 
+          year = as.numeric(year))
+snp_tidy = snp_df %>% 
+  left_join(month_df, by = "month") %>% 
+  mutate(month = month_name) %>% 
+  select(year, month, close)
+```
+
+### 3.3 Data cleaning Step 3 (unemployment):
+
+```{r, message = F}
+unemployment_df = read_csv("./data/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(jan:dec,
+    names_to = "month",
+    values_to = "unemployment") %>% 
+  mutate(year = as.integer(year))
+```
+
+```{r}
+month_Lower = tibble(
+  month = c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"),
+  month_name = month.name
+)
+```
+
+```{r}
+unemployment_tidy = unemployment_df %>% 
+  left_join(month_Lower, by = "month") %>% 
+  mutate(month = month_name) %>% 
+  select(year, month, unemployment)
+```
+
+_Join the three datasets accordingly_
+
+```{r}
+analy_df = 
+  left_join(polmonth_tidy,snp_tidy, by = c("year","month")) %>% 
+  left_join(unemployment_tidy, by = c("year","month"))
+```
