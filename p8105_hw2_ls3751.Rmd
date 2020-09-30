@@ -77,45 +77,54 @@ This dataset contains information from the Mr. Trashwheel trash collector in Bal
 
 ## Problem 2
 
-### read in the NYC transit data
+### 2.1 Dataset overview
 
 ```{r load the dataset, message = F, warning = F, collapse = T}
 nyc_transit_df = read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", 
                           col_types = "cccddccccccccccccccccclclcccddcc") %>% 
   janitor::clean_names() %>% 
-  select(line:vending, ada) %>% 
+  select(line:entry, vending, ada) %>% 
   mutate(entry = recode(entry, "YES" = T, "NO" = F)) %>% 
   mutate(vending = recode(vending, "YES" = T, "NO" = F))
 ```
 
+This dataset contains information about NYC subway MTA, including the location, the lines each station served, infrastructure status and so on. The `r ncol(nyc_transit_df)` variables are `r names(nyc_transit_df)`.
 
+The data cleaning process are as follow:
+
+*   read in the dataset and clean the variable names so that they all display as snake case.
+*   use select to pull variables of interest, and use mutate (recode) to covert character variables to logical variables.
+
+The dimension of the dataset is `r nrow(nyc_transit_df)` rows * `r ncol(nyc_transit_df)` columns. 
+
+THe dataset is not tidy yet. Routine number and routine name seems to be clustered together that rows did not represent the observations, and columns are not variables.
+
+
+
+### 2.2 Distinct stations and ADA compliant
 
 ```{r distinguish by name and line, collapse = T}
-nyc_transit_df %>% 
-  distinct(station_name, line, .keep_all = T) %>% 
-  nrow()
+nyc_distinct = nyc_transit_df %>% 
+  distinct(station_name, line, .keep_all = T)
+
+distinct_ada = filter(nyc_distinct, ada == TRUE)
+
+no_vending_entry = filter(nyc_transit_df, vending == F) %>%
+                  filter(entry == T)
+no_vending = filter(nyc_transit_df, vending == F)
 ```
 
+*   The number of the __distinct stations__ is `r nrow(nyc_distinct)`.
+*   Among them, `r nrow(distinct_ada)` stations are ADA compliant
+*   Proportion of stations that have no vending allow entrance is `r count(no_vending_entry)/count(no_vending)`.
 
 
-```{r ada compliant stations, collapse = T}
-filter(nyc_transit_df, ada == TRUE) %>% 
-  nrow()
-```
+### 2.3 Distinct stations serve A & ADA
 
+_Reformat the route number and route name_
 
-
-```{r, collapse = T}
-filter(nyc_transit_df, vending == F) %>%
-  filter(entry == T) %>% 
-  nrow()
-```
-
-
-
-Reformat the route number and route name 
 ```{r}
-nyc_transit_tidy = pivot_longer(nyc_transit_df, route1:route11,
+nyc_transit_tidy = pivot_longer(nyc_distinct, route1:route11,
              names_to = "route_name",
              values_to = "route_number",
              names_prefix = "route")
@@ -159,7 +168,7 @@ polmonth_tidy = polmonth_df %>%
 snp_df = read_csv("./data/snp.csv") %>% 
   janitor::clean_names() %>% 
   separate(date, c("month", "day", "year")) %>% 
-  mutate (month = as.numeric (month), 
+  mutate(month = as.numeric(month), 
           day = as.numeric(day), 
           year = as.numeric(year))
 snp_tidy = snp_df %>% 
