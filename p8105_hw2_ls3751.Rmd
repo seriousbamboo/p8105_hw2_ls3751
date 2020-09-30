@@ -159,8 +159,8 @@ polmonth_tidy = polmonth_df %>%
   select(-prez_dem, -prez_gop, -day, -month_name)
 ```
 
-This dataset contains `r nrow(polmonth_tidy)` records about politicians' and presidents' status. 
-The dimension of pols_month is [`r dim(polmonth_tidy)`], with `r ncol(polmonth_tidy)` variables collected from `r min(pull(polmonth_tidy,year))` to `r max(pull(polmonth_tidy,year))`.
+This dataset contains `r nrow(polmonth_tidy)` records about politicians' and presidents' status.  
+The dimension of pols_month is [`r dim(polmonth_tidy)`], with `r ncol(polmonth_tidy)` variables collected from `r min(pull(polmonth_tidy,year))` to `r max(pull(polmonth_tidy,year))`.  
 The variables are `r names(polmonth_tidy)`.
 
 ### 3.2 Data cleaning (snp):
@@ -181,8 +181,8 @@ snp_tidy = snp_df %>%
   select(year, month, close)
 ```
 
-This dataset contains `r nrow(snp_tidy)` S&P stock market index values, which the variable close indicates the value of S&P index when market is closed at that day. 
-The dimension of snp is [`r dim(snp_tidy)`], with `r ncol(snp_tidy)` variables collected from `r min(pull(snp_tidy,year))` to `r max(pull(snp_tidy,year))`.
+This dataset contains `r nrow(snp_tidy)` S&P stock market index values, which the variable close indicates the value of S&P index when market is closed at that day.  
+The dimension of snp is [`r dim(snp_tidy)`], with `r ncol(snp_tidy)` variables collected from `r min(pull(snp_tidy,year))` to `r max(pull(snp_tidy,year))`.  
 The variables are `r names(snp_tidy)`.
 
 ### 3.3 Data cleaning (unemployment):
@@ -204,8 +204,8 @@ unemployment_tidy = unemployment_df %>%
   select(year, month, unemployment)
 ```
 
-This dataset contains `r nrow(unemployment_tidy)` unemployment rates recorded monthly each year. 
-The dimension of unemployment is [`r dim(unemployment_tidy)`], with `r ncol(unemployment_tidy)` variables collected from `r min(pull(unemployment_tidy,year))` to `r max(pull(unemployment_tidy,year))`.
+This dataset contains `r nrow(unemployment_tidy)` unemployment rates recorded monthly each year.  
+The dimension of unemployment is [`r dim(unemployment_tidy)`], with `r ncol(unemployment_tidy)` variables collected from `r min(pull(unemployment_tidy,year))` to `r max(pull(unemployment_tidy,year))`.  
 The variables are `r names(unemployment_tidy)`.
 
 ### 3.4 Join the three datasets accordingly
@@ -217,6 +217,8 @@ analy_df =
 ```
 
 
-Since we start merging with pols_month dataset, we get `r nrow(analy_df)` observations, equals to the rows of pols_month dataset. 
-The dimension of the final_df is [`r dim(analy_df)`],with `r ncol(analy_df)` variables collected from `r min(pull(analy_df,year))` to `r max(pull(analy_df,year))`. Since pols_month dataset starts from 1947 which is earlier than the other two datasets, we can observe many missing data in "close" and "unemployment" associate to the years 1947-1949.
+Since we start merging with pols_month dataset, we get `r nrow(analy_df)` observations, equals to the rows of pols_month dataset.  
+The dimension of the final_df is [`r dim(analy_df)`],with `r ncol(analy_df)` variables collected from `r min(pull(analy_df,year))` to `r max(pull(analy_df,year))`.  
+The variables are `r names(analy_df)`.
+Since pols_month dataset starts from 1947 which is earlier than the other two datasets, we can observe many missing data in "close" and "unemployment" associate to the years 1947-1949.
 
